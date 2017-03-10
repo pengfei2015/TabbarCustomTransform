@@ -10,6 +10,11 @@ import UIKit
 
 class CustomTransform: NSObject {
 
+    var isContinuous: Bool
+    init(isContinuous: Bool = false) {
+        self.isContinuous = isContinuous
+        super.init()
+    }
 }
 
 extension CustomTransform: UIViewControllerAnimatedTransitioning {
@@ -19,28 +24,41 @@ extension CustomTransform: UIViewControllerAnimatedTransitioning {
     
     func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
         guard let fromeVC = transitionContext.viewController(forKey: .from), let toVC = transitionContext.viewController(forKey: .to) else { return }
-
         let containerView = transitionContext.containerView
-        let fromeStartFrame = transitionContext.initialFrame(for: fromeVC)
-        let toEndFrame = transitionContext.finalFrame(for: toVC)
-        guard let fromView = fromeVC.view, let toView = toVC.view else { return }
         guard let tbc = UIApplication.shared.keyWindow?.rootViewController as? UITabBarController, let fromeIndex = tbc.viewControllers?.index(where: { $0 == fromeVC}), let toIndex = tbc.viewControllers?.index(where: { $0 == toVC}) else { return }
-        let dir: CGFloat = fromeIndex < toIndex ? 1 : -1
-        // 计算fromeVC移动的位置
-        var r = fromeStartFrame
-        r.origin.x -= r.size.width * dir
-        let fromeEndFrame = r
-        r = toEndFrame
-        r.origin.x += r.size.width * dir
-        // 将toVC开始的位置
-        let toStartFrame = r
-        toView.frame = toStartFrame
-        containerView.addSubview(toView)
+        // 计算所有的开始frame  
+        var offset = toIndex - fromeIndex // 2
+        if !isContinuous {
+            offset = toIndex > fromeIndex ? 1 : -1
+        }
+        var startFrames = [(UIView, CGRect)]()
+        
+        for i in 0...Int(abs(offset)) {
+            let index = offset > 0 ? fromeIndex + i : fromeIndex - i
+            let wOffset = offset > 0 ? i : -i
+            var view: UIView!
+            if isContinuous {
+                view = tbc.viewControllers?[index].view
+            } else {
+                view = tbc.viewControllers?[toIndex].view
+            }
+            var temp = containerView.frame
+            temp.origin.x = temp.size.width * CGFloat(wOffset)
+            view?.frame = temp
+            containerView.addSubview(view!)
+            startFrames.append((view!, temp))
+        }
+        let endFrames = startFrames.map { (view, frame) -> (UIView, CGRect) in
+            var temp = frame
+            temp.origin.x = temp.origin.x - temp.size.width * CGFloat(offset)
+            return (view, temp)
+        }
         
         UIApplication.shared.beginIgnoringInteractionEvents()
         UIView.animate(withDuration: 0.4, animations: {
-            fromView.frame = fromeEndFrame
-            toView.frame = toEndFrame
+            endFrames.forEach({
+                $0.0.frame = $0.1
+            })
         }, completion: { _ in
             transitionContext.completeTransition(true)
             UIApplication.shared.endIgnoringInteractionEvents()
