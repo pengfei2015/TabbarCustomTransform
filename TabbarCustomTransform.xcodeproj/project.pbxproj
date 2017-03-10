@@ -8,12 +8,13 @@
 
 /* Begin PBXBuildFile section */
 		8858EEC61E728342009CF7B9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8858EEC51E728342009CF7B9 /* AppDelegate.swift */; };
-		8858EEC81E728342009CF7B9 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8858EEC71E728342009CF7B9 /* ViewController.swift */; };
+		8858EEC81E728342009CF7B9 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8858EEC71E728342009CF7B9 /* MainViewController.swift */; };
 		8858EECB1E728342009CF7B9 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8858EEC91E728342009CF7B9 /* Main.storyboard */; };
 		8858EECD1E728342009CF7B9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8858EECC1E728342009CF7B9 /* Assets.xcassets */; };
 		8858EED01E728342009CF7B9 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8858EECE1E728342009CF7B9 /* LaunchScreen.storyboard */; };
 		8858EEDB1E728342009CF7B9 /* TabbarCustomTransformTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8858EEDA1E728342009CF7B9 /* TabbarCustomTransformTests.swift */; };
 		8858EEE61E728342009CF7B9 /* TabbarCustomTransformUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8858EEE51E728342009CF7B9 /* TabbarCustomTransformUITests.swift */; };
+		8858EEF41E72840A009CF7B9 /* CustomTransform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8858EEF31E72840A009CF7B9 /* CustomTransform.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -36,7 +37,7 @@
 /* Begin PBXFileReference section */
 		8858EEC21E728342009CF7B9 /* TabbarCustomTransform.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TabbarCustomTransform.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8858EEC51E728342009CF7B9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		8858EEC71E728342009CF7B9 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		8858EEC71E728342009CF7B9 /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
 		8858EECA1E728342009CF7B9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		8858EECC1E728342009CF7B9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		8858EECF1E728342009CF7B9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -47,6 +48,7 @@
 		8858EEE11E728342009CF7B9 /* TabbarCustomTransformUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TabbarCustomTransformUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		8858EEE51E728342009CF7B9 /* TabbarCustomTransformUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabbarCustomTransformUITests.swift; sourceTree = "<group>"; };
 		8858EEE71E728342009CF7B9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		8858EEF31E72840A009CF7B9 /* CustomTransform.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomTransform.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -98,7 +100,8 @@
 			isa = PBXGroup;
 			children = (
 				8858EEC51E728342009CF7B9 /* AppDelegate.swift */,
-				8858EEC71E728342009CF7B9 /* ViewController.swift */,
+				8858EEC71E728342009CF7B9 /* MainViewController.swift */,
+				8858EEF31E72840A009CF7B9 /* CustomTransform.swift */,
 				8858EEC91E728342009CF7B9 /* Main.storyboard */,
 				8858EECC1E728342009CF7B9 /* Assets.xcassets */,
 				8858EECE1E728342009CF7B9 /* LaunchScreen.storyboard */,
@@ -262,7 +265,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8858EEC81E728342009CF7B9 /* ViewController.swift in Sources */,
+				8858EEC81E728342009CF7B9 /* MainViewController.swift in Sources */,
+				8858EEF41E72840A009CF7B9 /* CustomTransform.swift in Sources */,
 				8858EEC61E728342009CF7B9 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
