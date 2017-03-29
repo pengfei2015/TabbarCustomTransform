@@ -8,8 +8,8 @@
 
 import UIKit
 
-class CustomTransform: NSObject {
-
+class TabbarCustomTransform: NSObject {
+    
     var isContinuous: Bool
     init(isContinuous: Bool = false) {
         self.isContinuous = isContinuous
@@ -17,7 +17,7 @@ class CustomTransform: NSObject {
     }
 }
 
-extension CustomTransform: UIViewControllerAnimatedTransitioning {
+extension TabbarCustomTransform: UIViewControllerAnimatedTransitioning {
     func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
         return 0.4
     }
@@ -26,14 +26,14 @@ extension CustomTransform: UIViewControllerAnimatedTransitioning {
         guard let fromeVC = transitionContext.viewController(forKey: .from), let toVC = transitionContext.viewController(forKey: .to) else { return }
         let containerView = transitionContext.containerView
         guard let tbc = UIApplication.shared.keyWindow?.rootViewController as? UITabBarController, let fromeIndex = tbc.viewControllers?.index(where: { $0 == fromeVC}), let toIndex = tbc.viewControllers?.index(where: { $0 == toVC}) else { return }
-        // 计算所有的开始frame  
+        // 计算所有的开始frame
         var offset = toIndex - fromeIndex // 2
         if !isContinuous {
             offset = toIndex > fromeIndex ? 1 : -1
         }
-        var startFrames = [(UIView, CGRect)]()
-        
-        for i in 0...Int(abs(offset)) {
+        var endTransforms = [(view:UIView, transform:CGAffineTransform)]()
+        let width = containerView.frame.size.width
+        for i in 1...Int(abs(offset)) {
             let index = offset > 0 ? fromeIndex + i : fromeIndex - i
             let wOffset = offset > 0 ? i : -i
             var view: UIView!
@@ -42,26 +42,25 @@ extension CustomTransform: UIViewControllerAnimatedTransitioning {
             } else {
                 view = tbc.viewControllers?[toIndex].view
             }
-            var temp = containerView.frame
-            temp.origin.x = temp.size.width * CGFloat(wOffset)
-            view?.frame = temp
-            containerView.addSubview(view!)
-            startFrames.append((view!, temp))
+            let startX = width * CGFloat(wOffset)
+            let startTransform = CGAffineTransform(translationX: startX, y: 0)
+            let endX = startX - width * CGFloat(offset)
+            let endTransform = CGAffineTransform(translationX: endX, y: 0)
+            containerView.addSubview(view)
+            view.transform = startTransform
+            endTransforms.append((view, endTransform))
         }
-        let endFrames = startFrames.map { (view, frame) -> (UIView, CGRect) in
-            var temp = frame
-            temp.origin.x = temp.origin.x - temp.size.width * CGFloat(offset)
-            return (view, temp)
-        }
-        
-        UIApplication.shared.beginIgnoringInteractionEvents()
-        UIView.animate(withDuration: 0.4, animations: {
-            endFrames.forEach({
-                $0.0.frame = $0.1
-            })
+
+        let duration = transitionDuration(using: transitionContext)
+        UIView.animate(withDuration: duration, delay: 0, options: .curveEaseInOut, animations: { 
+            endTransforms.forEach {
+                $0.view.transform = $0.transform
+            }
         }, completion: { _ in
-            transitionContext.completeTransition(true)
-            UIApplication.shared.endIgnoringInteractionEvents()
+            endTransforms.forEach {
+                $0.view.transform = CGAffineTransform.identity
+            }
+            transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
         })
     }
 }
