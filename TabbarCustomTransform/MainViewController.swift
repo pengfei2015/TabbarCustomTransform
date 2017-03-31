@@ -19,6 +19,7 @@ class MainViewController: UITabBarController {
         super.viewDidLoad()
         delegate = self
         panGR = UIPanGestureRecognizer(target: self, action: #selector(handlePanGR(_:)))
+        panGR.delegate = self
         view.addGestureRecognizer(panGR)
     }
     
@@ -66,5 +67,14 @@ extension MainViewController: UITabBarControllerDelegate {
     
     func tabBarController(_ tabBarController: UITabBarController, interactionControllerFor animationController: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
         return interaction ? interactionContoller : nil
+    }
+}
+
+extension MainViewController: UIGestureRecognizerDelegate  {
+    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        guard let selectedVC = selectedViewController as? UINavigationController else { return true }
+        guard selectedVC.childViewControllers.count == 1 else { return false }
+        let pointY = gestureRecognizer.location(in: view).y
+        return pointY < UIScreen.main.bounds.size.height - tabBar.bounds.size.height
     }
 }
