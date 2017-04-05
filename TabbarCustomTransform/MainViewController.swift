@@ -13,7 +13,9 @@ class MainViewController: UITabBarController {
     fileprivate var interactionContoller = UIPercentDrivenInteractiveTransition()
     fileprivate var panGR: UIPanGestureRecognizer!
     fileprivate var interaction = false
-    fileprivate var velocityX: CGFloat = 0
+    fileprivate var startVelocityX: CGFloat = 0
+    fileprivate var endVelocityX: CGFloat = 0
+    fileprivate lazy var translationing = TabbarCustomTransform(isContinuous: true)
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -21,11 +23,12 @@ class MainViewController: UITabBarController {
         panGR = UIPanGestureRecognizer(target: self, action: #selector(handlePanGR(_:)))
         panGR.delegate = self
         view.addGestureRecognizer(panGR)
+        
     }
     
     func handlePanGR(_ panGR: UIPanGestureRecognizer) {
         var translationX = panGR.translation(in: view).x
-        if (translationX > 0 && velocityX < 0) || (translationX < 0 && velocityX > 0) {
+        if translationX * startVelocityX < 0 {
             translationX = 0.01
         }
         let translationAbs = translationX > 0 ? translationX : -translationX
@@ -33,8 +36,8 @@ class MainViewController: UITabBarController {
         switch panGR.state {
         case .began:
             interaction = true
-            velocityX = panGR.velocity(in: view).x
-            if velocityX < 0 {
+            startVelocityX = panGR.velocity(in: view).x
+            if startVelocityX < 0 {
                 if selectedIndex + 1 < viewControllers?.count ?? 0 {
                     selectedIndex += 1
                 }
@@ -47,12 +50,22 @@ class MainViewController: UITabBarController {
             interactionContoller.update(percent)
         case .cancelled, .ended:
             interactionContoller.completionSpeed = 0.99
+            endVelocityX = panGR.velocity(in: view).x
             if percent > 0.3 {
-                interactionContoller.finish()
+                if endVelocityX * startVelocityX < 0 && endVelocityX.abs > 500 {
+                    interactionContoller.cancel()
+                } else {
+                    interactionContoller.finish()
+                }
             } else {
-                interactionContoller.cancel()
+                if endVelocityX * startVelocityX > 0 && endVelocityX.abs > 1000 {
+                    interactionContoller.finish()
+                } else {
+                    interactionContoller.cancel()
+                }
             }
-            velocityX = 0
+            startVelocityX = 0
+            endVelocityX = 0
             interaction = false
         default:
             break
@@ -62,7 +75,7 @@ class MainViewController: UITabBarController {
 
 extension MainViewController: UITabBarControllerDelegate {
     func tabBarController(_ tabBarController: UITabBarController, animationControllerForTransitionFrom fromVC: UIViewController, to toVC: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        return TabbarCustomTransform(isContinuous: true)
+        return translationing
     }
     
     func tabBarController(_ tabBarController: UITabBarController, interactionControllerFor animationController: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
@@ -72,9 +85,18 @@ extension MainViewController: UITabBarControllerDelegate {
 
 extension MainViewController: UIGestureRecognizerDelegate  {
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        if translationing.animating {
+            return false
+        }
         guard let selectedVC = selectedViewController as? UINavigationController else { return true }
         guard selectedVC.childViewControllers.count == 1 else { return false }
         let pointY = gestureRecognizer.location(in: view).y
         return pointY < UIScreen.main.bounds.size.height - tabBar.bounds.size.height
+    }
+}
+
+extension CGFloat {
+    var abs: CGFloat {
+        return self > 0 ? self : -self
     }
 }

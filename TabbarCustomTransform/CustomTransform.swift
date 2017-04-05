@@ -10,6 +10,7 @@ import UIKit
 
 class TabbarCustomTransform: NSObject {
     
+    var animating: Bool = false
     var isContinuous: Bool
     init(isContinuous: Bool = false) {
         self.isContinuous = isContinuous
@@ -26,6 +27,7 @@ extension TabbarCustomTransform: UIViewControllerAnimatedTransitioning {
         guard let fromeVC = transitionContext.viewController(forKey: .from), let toVC = transitionContext.viewController(forKey: .to) else { return }
         let containerView = transitionContext.containerView
         guard let tbc = UIApplication.shared.keyWindow?.rootViewController as? UITabBarController, let fromeIndex = tbc.viewControllers?.index(where: { $0 == fromeVC}), let toIndex = tbc.viewControllers?.index(where: { $0 == toVC}) else { return }
+        animating = true
         // 计算所有的开始frame
         var offset = toIndex - fromeIndex // 2
         if !isContinuous {
@@ -52,15 +54,17 @@ extension TabbarCustomTransform: UIViewControllerAnimatedTransitioning {
         }
 
         let duration = transitionDuration(using: transitionContext)
-        UIView.animate(withDuration: duration, delay: 0, options: .curveEaseInOut, animations: { 
+        
+        UIView.animate(withDuration: duration, delay: 0, options: .curveEaseInOut, animations: {
             endTransforms.forEach {
                 $0.view.transform = $0.transform
             }
         }, completion: { _ in
+            self.animating = false
             endTransforms.forEach {
                 $0.view.transform = CGAffineTransform.identity
+                transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
             }
-            transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
         })
     }
 }
